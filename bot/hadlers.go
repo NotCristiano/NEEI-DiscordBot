@@ -1,13 +1,19 @@
 package bot
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"NEEI-DiscordBot/commands"
+
+	"github.com/bwmarrin/discordgo"
+)
 
 func interactionHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	if i.Type == discordgo.InteractionApplicationCommand {
-		if i.ApplicationCommandData().Name == "hello" {
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{Content: "Hello World!"}})
+		// Procuramos o comando correspondente
+		commandName := i.ApplicationCommandData().Name
+
+		// Verificamos se o comando existe
+		if handler, ok := commands.CommandMap[commandName]; ok {
+			handler(s, i)
 		}
 	}
 }

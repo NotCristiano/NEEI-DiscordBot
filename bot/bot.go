@@ -39,7 +39,7 @@ func Start(token string) error {
 
 	// Damos load nos comandos
 	fmt.Println("carregando comandos...")
-	for _, comm := range commands.Commands {
+	for _, comm := range commands.ComandosApresentar {
 		_, err := goBot.ApplicationCommandCreate(goBot.State.User.ID, ServerID, comm)
 		if err != nil {
 			return fmt.Errorf("erro ao carregar comando: %w", err)
