@@ -17,22 +17,17 @@ func main() {
 	log.Info().Msg("Iniciando NEEI-DiscordBot...")
 
 	// Carregar config primeiro (antes de init())
-	commands.LoadConfig()
-	log.Debug().Msg("Config carregada.")
+	cfg, err := commands.LoadConfig()
+	if err != nil {
+		log.Fatal().Err(err).Msg("Falha ao carregar config.")
+	}
+	log.Debug().Msgf("Config carregada.")
 
 	// Roles dependem de env e precisam ser definidas depois do LoadConfig
-	commands.SetCommandRoles("echo", []string{commands.RoleDev, commands.RoleDirecao})
-
-	// Extraimos o token do arquivo .env
-	token := os.Getenv("TOKEN")
-
-	// Verificamos se o token existe
-	if token == "" {
-		log.Fatal().Msg("ERRO: TOKEN vazio; verifique o arquivo local.env")
-	}
+	commands.SetCommandRoles("echo", []string{cfg.RoleDev, cfg.RoleDirecao})
 
 	// Iniciamos o bot
-	if err := bot.Start(token); err != nil {
+	if err := bot.Start(cfg.Token); err != nil {
 		log.Fatal().Err(err).Msg("Falha ao iniciar bot.")
 	}
 
