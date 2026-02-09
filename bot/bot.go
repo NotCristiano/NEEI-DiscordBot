@@ -15,7 +15,7 @@ func Start(token string) error {
 
 	// Verificamos redundantemente se o token existe
 	if token == "" {
-		return fmt.Errorf("TOKEN vazio; verifique o arquivo token.env")
+		return fmt.Errorf("TOKEN vazio; verifique o arquivo local.env")
 	}
 
 	// Criamos o bot

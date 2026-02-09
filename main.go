@@ -2,23 +2,20 @@ package main
 
 import (
 	"NEEI-DiscordBot/bot"
+	"NEEI-DiscordBot/commands"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
 
-	// Vamos ler o arquivo .env
-	err := godotenv.Load("token.env")
+	// Carregar config primeiro (antes de init())
+	commands.LoadConfig()
 
-	// Se houver algum erro, o programa vai parar
-	if err != nil {
-		panic("Erro ao ler o arquivo .env")
-	}
+	// Roles dependem de env e precisam ser definidas depois do LoadConfig.
+	commands.SetCommandRoles("echo", []string{commands.RoleDev, commands.RoleDirecao})
 
 	// Extraimos o token do arquivo .env
 	token := os.Getenv("TOKEN")
@@ -34,5 +31,4 @@ func main() {
 	<-sc
 
 	fmt.Println("Bot parado com sucesso!")
-
 }
