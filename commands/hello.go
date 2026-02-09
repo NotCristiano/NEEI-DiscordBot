@@ -2,10 +2,17 @@ package commands
 
 import "github.com/bwmarrin/discordgo"
 
-// HelloCommand contém a definição do comando
-var HelloCommand = &discordgo.ApplicationCommand{
-	Name:        "hello",
-	Description: "Retorna 'Hello World!'",
+// Automaticamente registamos o comando e especificamos os dados e restrições
+func init() {
+	RegisterCommand(BotCommand{
+		Definition: &discordgo.ApplicationCommand{
+			Name:        "hello",
+			Description: "Retorna 'Hello World!'",
+			Options:     []*discordgo.ApplicationCommandOption{},
+		},
+		Handler:       HelloHandler,
+		RequiredRoles: nil,
+	})
 }
 
 // HelloHandler contém a lógica do comando

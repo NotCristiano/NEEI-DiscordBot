@@ -14,7 +14,7 @@ func main() {
 	// Carregar config primeiro (antes de init())
 	commands.LoadConfig()
 
-	// Roles dependem de env e precisam ser definidas depois do LoadConfig.
+	// Roles dependem de env e precisam ser definidas depois do LoadConfig
 	commands.SetCommandRoles("echo", []string{commands.RoleDev, commands.RoleDirecao})
 
 	// Extraimos o token do arquivo .env
