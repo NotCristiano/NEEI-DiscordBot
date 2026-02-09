@@ -14,7 +14,7 @@ import (
 // ServerID os comandos aparecerem mais rápido especificamos o ID do servidor
 const ServerID = "1466460166374428786"
 
-func SetupLoger() {
+func SetupLogger() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 }
@@ -25,12 +25,6 @@ func Start(token string) error {
 	// Damos setup no logger e colocamos uma tag do componente
 	logger := log.With().Str("component", "bot").Logger()
 	logger.Info().Msg("A iniciar o bot...")
-
-	// Verificamos se o token existe
-	if token == "" {
-		logger.Error().Msg("TOKEN vazio; verifique o arquivo local.env")
-		return fmt.Errorf("TOKEN vazio; verifique o arquivo local.env")
-	}
 
 	// Criamos o bot
 	goBot, err := discordgo.New("Bot " + token)
@@ -75,9 +69,8 @@ func Start(token string) error {
 			return fmt.Errorf("erro ao carregar comando: %w", err)
 		}
 
-		commLogger.Debug().Msg("Comando carregado com sucesso!")
+		commLogger.Info().Msg("Comando carregado com sucesso!")
 	}
 
-	fmt.Println("bot iniciado com sucesso!")
 	return nil
 }
