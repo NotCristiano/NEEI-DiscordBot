@@ -12,7 +12,7 @@ import (
 )
 
 // ServerID os comandos aparecerem mais rápido especificamos o ID do servidor
-const ServerID = "1466460166374428786"
+const ServerID = "1466460166374428786" //TODO: USAR O QUE ESTÁ NO ENV
 
 func SetupLogger() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
@@ -20,7 +20,7 @@ func SetupLogger() {
 }
 
 // Start função para iniciar o bot
-func Start(token string) error {
+func Start(token string) (*discordgo.Session, error) {
 
 	// Damos setup no logger e colocamos uma tag do componente
 	logger := log.With().Str("component", "bot").Logger()
@@ -30,7 +30,7 @@ func Start(token string) error {
 	goBot, err := discordgo.New("Bot " + token)
 	if err != nil {
 		logger.Error().Err(err).Msg("Falha ao criar sessão do bot.")
-		return fmt.Errorf("erro ao criar sessão do bot: %w", err)
+		return nil, fmt.Errorf("erro ao criar sessão do bot: %w", err)
 	}
 
 	// Chamamos o handler de eventos antes de iniciar o bot
@@ -41,13 +41,13 @@ func Start(token string) error {
 	err = goBot.Open()
 	if err != nil {
 		logger.Error().Err(err).Msg("Falha ao iniciar websocket do bot.")
-		return fmt.Errorf("erro ao iniciar o bot: %w", err)
+		return nil, fmt.Errorf("erro ao iniciar o bot: %w", err)
 	}
 
 	// Verificações de estado para garantir que o bot foi iniciado com sucesso
 	if goBot.State == nil || goBot.State.User == nil {
 		logger.Error().Msg("Estado do bot é nulo mesmo depois de Open.")
-		return fmt.Errorf("estado do bot não inicializado após Open")
+		return nil, fmt.Errorf("estado do bot não inicializado após Open")
 	}
 
 	// Guardamos para o logger as informações do bot assim que iniciado
@@ -66,11 +66,11 @@ func Start(token string) error {
 		_, err := goBot.ApplicationCommandCreate(goBot.State.User.ID, ServerID, comm)
 		if err != nil {
 			commLogger.Error().Err(err).Msg("Falha ao carregar comando.")
-			return fmt.Errorf("erro ao carregar comando: %w", err)
+			return nil, fmt.Errorf("erro ao carregar comando: %w", err)
 		}
 
 		commLogger.Info().Msg("Comando carregado com sucesso!")
 	}
 
-	return nil
+	return goBot, nil
 }

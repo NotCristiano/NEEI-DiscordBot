@@ -3,14 +3,20 @@ package main
 import (
 	"NEEI-DiscordBot/bot"
 	"NEEI-DiscordBot/commands"
+	"context"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/rs/zerolog/log"
 )
 
 func main() {
+
+	// Damos setup no context
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	// Iniciamos o logger
 	bot.SetupLogger()
@@ -27,19 +33,39 @@ func main() {
 	commands.SetCommandRoles("echo", []string{cfg.RoleDev, cfg.RoleDirecao})
 
 	// Iniciamos o bot
-	if err := bot.Start(cfg.Token); err != nil {
+	discordSession, err := bot.Start(cfg.Token)
+	if err != nil {
 		log.Fatal().Err(err).Msg("Falha ao iniciar bot.")
 	}
 
-	// Hook de espera para o bot parar
-	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+	// Esperamos pelo sinal de parada
+	<-ctx.Done()
 
-	// Bloqueia até receber um sinal
-	sig := <-sc
+	// Log de intenção shutdown
+	log.Info().Msg("A fechar todas as instâncias do bot.")
+
+	// Criamos um timeout para o bot parar caso esteja preso
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Usar uma goroutine para parar o bot não é necessário, mas garantirmos para futura escalabilidade (DB)
+	done := make(chan struct{})
+	go func() {
+		// Fechar de forma correta os websockets do bot
+		if err := discordSession.Close(); err != nil {
+			log.Error().Err(err).Msg("Erro ao fechar a sessão do bot.")
+		}
+		close(done)
+	}()
+
+	// Fica à espera aqui até o bot fechar por alguma das duas razões
+	select {
+	case <-done:
+		log.Info().Msg("Sessão do bot fechada.")
+	case <-shutdownCtx.Done():
+		log.Warn().Msg("Shutdown do bot demorou muito. Parada forçada.")
+	}
 
 	// Log do shutdown do bot
-	log.Info().
-		Str("signal", sig.String()).
-		Msg("Bot parado.")
+	log.Info().Msg("Bot parado.")
 }
