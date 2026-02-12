@@ -2,9 +2,19 @@ package bot
 
 import (
 	"NEEI-DiscordBot/commands"
+	"fmt"
+	"sync"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/zerolog/log"
+)
+
+// Variaveis globais para dar track no cooldown
+var (
+	// Formato mapa: UserID: NomeComando -> Ultima execução do comando
+	userCooldowns = make(map[string]time.Time)
+	cooldownMutex sync.Mutex
 )
 
 func interactionHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -29,6 +39,33 @@ func interactionHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Verificamos se o comando existe
 	if cmd, ok := commands.CommandMap[cmdData.Name]; ok {
+
+		if cmd.Cooldown > 0 {
+			// Criamos uma key
+			key := fmt.Sprintf("%s:%s", i.Member.User.ID, cmdData.Name)
+
+			cooldownMutex.Lock() // Damos lock para evitar conflitos
+			lastExecution, found := userCooldowns[key]
+
+			if found {
+				elapsed := time.Since(lastExecution)
+				if elapsed < cmd.Cooldown {
+					remaining := cmd.Cooldown - elapsed
+					cooldownMutex.Unlock() // Antes de retornar temos de dar unlock
+
+					logger.Warn().
+						Str("retry_after", remaining.String()).
+						Msg("Comando em cooldown.")
+
+					// Respondemos com um ephemeral para avisar o user
+					sendEphemeral(s, i, fmt.Sprintf("Comando em cooldown. Tente novamente em %.1f segundos.", remaining.Seconds()))
+					return
+				}
+			}
+			// Finalmente atualizamos o mapa
+			userCooldowns[key] = time.Now()
+			cooldownMutex.Unlock()
+		}
 
 		// Verificamos se o comando quer uma role
 		if len(cmd.RequiredRoles) > 0 {
