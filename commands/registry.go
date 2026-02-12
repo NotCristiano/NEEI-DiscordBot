@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/zerolog/log"
 )
@@ -10,6 +12,7 @@ type BotCommand struct {
 	Definition    *discordgo.ApplicationCommand // Extrai tudo do comando
 	Handler       func(s *discordgo.Session, i *discordgo.InteractionCreate)
 	RequiredRoles []string
+	Cooldown      time.Duration
 }
 
 var (

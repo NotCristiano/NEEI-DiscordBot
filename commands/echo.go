@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -20,6 +22,7 @@ func init() {
 		},
 		Handler:       EchoHandler,
 		RequiredRoles: nil,
+		Cooldown:      5 * time.Second,
 	})
 }
 

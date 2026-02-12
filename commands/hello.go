@@ -1,6 +1,10 @@
 package commands
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"time"
+
+	"github.com/bwmarrin/discordgo"
+)
 
 // Automaticamente registamos o comando e especificamos os dados e restrições
 func init() {
@@ -12,6 +16,7 @@ func init() {
 		},
 		Handler:       HelloHandler,
 		RequiredRoles: nil,
+		Cooldown:      5 * time.Second,
 	})
 }
 
