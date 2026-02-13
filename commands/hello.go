@@ -16,7 +16,7 @@ func init() {
 		},
 		Handler:       HelloHandler,
 		RequiredRoles: nil,
-		Cooldown:      5 * time.Second,
+		Cooldown:      0 * time.Second,
 	})
 }
 

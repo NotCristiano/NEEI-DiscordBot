@@ -26,6 +26,9 @@ func Start(token string) (*discordgo.Session, error) {
 	logger := log.With().Str("component", "bot").Logger()
 	logger.Info().Msg("A iniciar o bot...")
 
+	// Iniciamos a queue
+	StartQueue()
+
 	// Criamos o bot
 	goBot, err := discordgo.New("Bot " + token)
 	if err != nil {
