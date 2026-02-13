@@ -105,7 +105,9 @@ func interactionHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		logger.Info().Msg("Comando handler a ser executado.")
 
 		// Executamos o comando
-		cmd.Handler(s, i)
+		// cmd.Handler(s, i)
+
+		Enqueue(s, i, cmd.Handler)
 	} else {
 		// Caso do comando não existir
 		logger.Warn().Msg("Interação recebida para comando desconhecido.")
