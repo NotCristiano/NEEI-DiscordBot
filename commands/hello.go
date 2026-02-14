@@ -8,15 +8,18 @@ import (
 
 // Automaticamente registamos o comando e especificamos os dados e restrições
 func init() {
-	RegisterCommand(BotCommand{
-		Definition: &discordgo.ApplicationCommand{
-			Name:        "hello",
-			Description: "Retorna 'Hello World!'",
-			Options:     []*discordgo.ApplicationCommandOption{},
-		},
-		Handler:       HelloHandler,
-		RequiredRoles: nil,
-		Cooldown:      0 * time.Second,
+	AddCommand(func(cfg *Config) BotCommand {
+		return BotCommand{
+
+			Definition: &discordgo.ApplicationCommand{
+				Name:        "hello",
+				Description: "Retorna 'Hello World!'",
+				Options:     []*discordgo.ApplicationCommandOption{},
+			},
+			Handler:       HelloHandler,
+			RequiredRoles: nil,
+			Cooldown:      0 * time.Second,
+		}
 	})
 }
 

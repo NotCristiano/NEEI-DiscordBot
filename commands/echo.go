@@ -8,21 +8,23 @@ import (
 
 // Automaticamente registamos o comando e especificamos os dados e restrições
 func init() {
-	RegisterCommand(BotCommand{
-		Definition: &discordgo.ApplicationCommand{
-			Name:        "echo",
-			Description: "Repete o que é inserido",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Type: discordgo.ApplicationCommandOptionString,
-					Name: "texto", Description: "Texto a ser repetido",
-					Required: true,
+	AddCommand(func(cfg *Config) BotCommand {
+		return BotCommand{
+			Definition: &discordgo.ApplicationCommand{
+				Name:        "echo",
+				Description: "Repete o que é inserido",
+				Options: []*discordgo.ApplicationCommandOption{
+					{
+						Type: discordgo.ApplicationCommandOptionString,
+						Name: "texto", Description: "Texto a ser repetido",
+						Required: true,
+					},
 				},
 			},
-		},
-		Handler:       EchoHandler,
-		RequiredRoles: nil,
-		Cooldown:      5 * time.Second,
+			Handler:       EchoHandler,
+			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao},
+			Cooldown:      5 * time.Second,
+		}
 	})
 }
 

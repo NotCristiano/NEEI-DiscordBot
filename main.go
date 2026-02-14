@@ -3,6 +3,7 @@ package main
 import (
 	"NEEI-DiscordBot/bot"
 	"NEEI-DiscordBot/commands"
+
 	"context"
 	"os"
 	"os/signal"
@@ -29,8 +30,8 @@ func main() {
 	}
 	log.Debug().Msgf("Config carregada.")
 
-	// Roles dependem de env e precisam ser definidas depois do LoadConfig
-	commands.SetCommandRoles("echo", []string{cfg.RoleDev, cfg.RoleDirecao})
+	// Registamos todos os comandos encontrados
+	commands.InitCommands(cfg)
 
 	// Iniciamos o bot
 	discordSession, err := bot.Start(cfg.Token)
