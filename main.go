@@ -33,7 +33,7 @@ func main() {
 	// Registamos todos os comandos encontrados
 	commands.InitCommands(cfg)
 
-	// Iniciamos o bot
+	// Iniciamos o bot dependendo do environment
 	discordSession, err := bot.Start(cfg.Token)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Falha ao iniciar bot.")

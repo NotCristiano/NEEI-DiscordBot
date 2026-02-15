@@ -14,12 +14,9 @@ type Config struct {
 	RoleDev     string `mapstructure:"ROLE_DEV"`
 	RoleDirecao string `mapstructure:"ROLE_DIRECAO"`
 	RoleNEEI    string `mapstructure:"ROLE_NEEI"`
-	Environment string `mapstructure:"ENVIRONMENT"` // ie 'production', 'development', assim podemos futuramente escolher sistemas stats view
 }
 
 func LoadConfig() (*Config, error) {
-	// Por default fica dev
-	viper.SetDefault("ENVIRONMENT", "development")
 
 	// Especificamos o ficheiro env
 	viper.SetConfigName("local")
