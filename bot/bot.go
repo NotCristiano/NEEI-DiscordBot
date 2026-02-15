@@ -11,9 +11,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// ServerID os comandos aparecerem mais rápido especificamos o ID do servidor
-const ServerID = "1466460166374428786" //TODO: USAR O QUE ESTÁ NO ENV
-
 func SetupLogger() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
@@ -66,7 +63,7 @@ func Start(token string) (*discordgo.Session, error) {
 		// Usamos outro subLogger para cada comando
 		commLogger := logger.With().Str("command", comm.Name).Logger()
 
-		_, err := goBot.ApplicationCommandCreate(goBot.State.User.ID, ServerID, comm)
+		_, err := goBot.ApplicationCommandCreate(goBot.State.User.ID, "", comm)
 		if err != nil {
 			commLogger.Error().Err(err).Msg("Falha ao carregar comando.")
 			return nil, fmt.Errorf("erro ao carregar comando: %w", err)
