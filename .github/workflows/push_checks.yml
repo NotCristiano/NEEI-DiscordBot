@@ -20,7 +20,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22' # Ensure this matches your project's version
+          go-version: '1.26' # Ensure this matches your project's version
           cache: true        # Automatically caches dependencies for faster runs
 
       # Ensure dependencies are downloaded and correct
