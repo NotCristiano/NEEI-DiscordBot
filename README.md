@@ -12,9 +12,9 @@
 | Variável      | Descrição                                |
 |---------------|------------------------------------------|
 | `TOKEN`       | Token do bot Discord                     |
-| `ROLE_ID1`    | ID de uma role                           |
-| `ROLE_ID2`    | ID de uma role                           |
-| `ENVIRONMENT` | Ambiente (`development` ou `production`) |
+| `ROLE_DEV`    | ID de uma role                           |
+| `ROLE_DIRECAO`| ID de uma role                           |
+| `ROLE_NEEI`   | ID de uma role                           |
 
 
 3. **Executar o bot:**
