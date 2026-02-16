@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"NEEI-DiscordBot/commands"
+	"NEEI-DiscordBot/internal/commands"
 	"fmt"
 	"os"
 	"time"

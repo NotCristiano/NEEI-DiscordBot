@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"NEEI-DiscordBot/internal/config"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -8,7 +9,7 @@ import (
 
 // Automaticamente registamos o comando e especificamos os dados e restrições
 func init() {
-	AddCommand(func(cfg *Config) BotCommand {
+	AddCommand(func(cfg *config.Config) BotCommand {
 		return BotCommand{
 			Definition: &discordgo.ApplicationCommand{
 				Name:        "echo",

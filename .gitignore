@@ -1,0 +1,19 @@
+# Build Artifacts
+/main
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Secrets
+.env
+local.env
+*.env
+secret.json
+
+# IDE Bloat
+.idea/
+.vscode/
+*.swp
+*.DS_Store
+Thumbs.db

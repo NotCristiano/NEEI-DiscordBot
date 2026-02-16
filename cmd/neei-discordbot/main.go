@@ -1,8 +1,9 @@
 package main
 
 import (
-	"NEEI-DiscordBot/bot"
-	"NEEI-DiscordBot/commands"
+	"NEEI-DiscordBot/internal/bot"
+	commands2 "NEEI-DiscordBot/internal/commands"
+	"NEEI-DiscordBot/internal/config"
 
 	"context"
 	"os"
@@ -24,16 +25,16 @@ func main() {
 	log.Info().Msg("Iniciando NEEI-DiscordBot...")
 
 	// Carregar config primeiro (antes de init())
-	cfg, err := commands.LoadConfig()
+	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal().Err(err).Msg("Falha ao carregar config.")
 	}
 	log.Debug().Msgf("Config carregada.")
 
 	// Registamos todos os comandos encontrados
-	commands.InitCommands(cfg)
+	commands2.InitCommands(cfg)
 
-	// Iniciamos o bot dependendo do environment
+	// Iniciamos o bot
 	discordSession, err := bot.Start(cfg.Token)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Falha ao iniciar bot.")
