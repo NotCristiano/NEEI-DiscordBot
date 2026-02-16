@@ -1,0 +1,40 @@
+name: Push Tests
+
+# This triggers the workflow on a push to ANY branch
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  validate-code:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out the code from the specific branch that was pushed
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Set up the Go environment
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22' # Ensure this matches your project's version
+          cache: true        # Automatically caches dependencies for faster runs
+
+      # Ensure dependencies are downloaded and correct
+      - name: Verify Dependencies
+        run: go mod verify
+
+      # Check for syntax errors by trying to build
+      - name: Build Check
+        run: go build -v ./...
+
+      # Run all tests in the project
+      - name: Run Tests
+        run: go test -v ./...
+
+      # Basic formatting check
+      - name: Check Formatting
+        run: if [ -n "$(gofmt -l .)" ]; then echo "Go code is not formatted"; exit 1; fi

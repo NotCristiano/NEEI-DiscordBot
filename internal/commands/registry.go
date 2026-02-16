@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"NEEI-DiscordBot/internal/config"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -16,7 +17,7 @@ type BotCommand struct {
 }
 
 // CommandConfig é um type que precisa da config para retornar um comando
-type CommandConfig func(cfg *Config) BotCommand
+type CommandConfig func(cfg *config.Config) BotCommand
 
 var (
 	// CommandMap mapeia o nome do comando para o seu handler
@@ -34,7 +35,7 @@ func AddCommand(cmd CommandConfig) {
 	ComandosLista = append(ComandosLista, cmd)
 }
 
-func InitCommands(cfg *Config) {
+func InitCommands(cfg *config.Config) {
 
 	logger := log.With().Str("component", "initCommands").Logger()
 
