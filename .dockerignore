@@ -1,0 +1,7 @@
+.git
+.github
+tests
+local.env
+bin/
+README.md
+CONTRIBUTING.md
