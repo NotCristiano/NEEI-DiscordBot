@@ -79,6 +79,7 @@ func HelloHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 ```
 
 **Exemplo de Teste (Hello.go):**
+
 Teste direto na coneçâo entre bot e discord é bastante complexo, portanto vamos apenas testar as informações passadas.
 
 ```go
