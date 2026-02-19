@@ -47,7 +47,7 @@ Para contribuir leia [CONTRIBUTING.md](https://github.com/NotCristiano/NEEI-Disc
 
 ## Copyright
 
-Copyright (c) the respective contributors, as shown by the AUTHORS file.
+Copyright (c) the respective contributors, as shown in [Contributors](https://github.com/NotCristiano/NEEI-DiscordBot/graphs/contributors).
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
