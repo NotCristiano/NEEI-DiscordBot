@@ -22,15 +22,15 @@ func init() {
 					},
 				},
 			},
-			Handler:       EchoHandler,
+			Handler:       echoHandler,
 			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao},
 			Cooldown:      5 * time.Second,
 		}
 	})
 }
 
-// EchoHandler contém a lógica do comando
-func EchoHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
+// echoHandler contém a lógica do comando
+func echoHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Extraimos o texto do comando, a mensagem a ser repetida vai estar na primeira posição
 	msg := i.ApplicationCommandData().Options[0].StringValue()

@@ -2,29 +2,27 @@ package bot
 
 import (
 	"NEEI-DiscordBot/internal/commands"
+	"NEEI-DiscordBot/internal/queue"
+	"context"
 	"fmt"
-	"os"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
-func SetupLogger() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-}
-
 // Start função para iniciar o bot
-func Start(token string) (*discordgo.Session, error) {
+func Start(ctx context.Context, token string) (*discordgo.Session, error) {
 
 	// Damos setup no logger e colocamos uma tag do componente
 	logger := log.With().Str("component", "bot").Logger()
 	logger.Info().Msg("A iniciar o bot...")
 
-	// Iniciamos a queue
-	StartQueue()
+	// Iniciamos a queue com suporte a shutdown
+	queue.StartQueue(ctx)
+
+	// Iniciamos o cleaner de cooldowns
+	startCooldownCleaner(ctx)
 
 	// Criamos o bot
 	goBot, err := discordgo.New("Bot " + token)
@@ -56,6 +54,9 @@ func Start(token string) (*discordgo.Session, error) {
 		Str("id", goBot.State.User.ID).
 		Msg("Bot iniciado com sucesso!")
 
+	// Limpamos comandos antigos que já não existem no registo local
+	cleanStaleCommands(goBot, logger)
+
 	// Damos load nos comandos
 	logger.Info().Int("count", len(commands.ComandosApresentar)).Msg("Carregando comandos...")
 	for _, comm := range commands.ComandosApresentar {
@@ -73,4 +74,22 @@ func Start(token string) (*discordgo.Session, error) {
 	}
 
 	return goBot, nil
+}
+
+// cleanStaleCommands remove do Discord comandos que já não existem no registo local
+func cleanStaleCommands(s *discordgo.Session, logger zerolog.Logger) {
+	registeredCmds, err := s.ApplicationCommands(s.State.User.ID, "")
+	if err != nil {
+		logger.Warn().Err(err).Msg("Não foi possível listar comandos do Discord para limpeza.")
+		return
+	}
+
+	for _, cmd := range registeredCmds {
+		if _, exists := commands.CommandMap[cmd.Name]; !exists {
+			logger.Info().Str("command", cmd.Name).Msg("A remover comando obsoleto do Discord.")
+			if err := s.ApplicationCommandDelete(s.State.User.ID, "", cmd.ID); err != nil {
+				logger.Warn().Err(err).Str("command", cmd.Name).Msg("Falha ao remover comando obsoleto.")
+			}
+		}
+	}
 }
