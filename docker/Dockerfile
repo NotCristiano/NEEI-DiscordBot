@@ -8,12 +8,12 @@ RUN apk add --no-cache git
 WORKDIR /app
 
 # Copy dependency files first to cache downloads
-COPY go.mod go.sum ./
+COPY ../go.mod go.sum ./
 RUN go mod download
 
 # Copy the rest of the source code
 COPY cmd/ ./cmd/
-COPY internal/ ./internal/
+COPY ../internal ./internal/
 
 # CGO_ENABLED=0 creates a statically linked binary
 RUN CGO_ENABLED=0 GOOS=linux go build -o /neei-bot cmd/neei-discordbot/main.go

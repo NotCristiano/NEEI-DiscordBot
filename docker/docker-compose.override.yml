@@ -1,0 +1,9 @@
+services:
+  bot: # Builds from source locally instead of pulling from ghcr.io
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: neei-discordbot-local:dev
+    restart: "no"          # don't auto-restart while developing
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
