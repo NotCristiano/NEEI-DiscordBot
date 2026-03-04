@@ -1,15 +1,16 @@
 package main
 
 import (
-	"NEEI-DiscordBot/internal/bot"
-	commands2 "NEEI-DiscordBot/internal/commands"
-	"NEEI-DiscordBot/internal/config"
-
 	"context"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"NEEI-DiscordBot/internal/bot"
+	"NEEI-DiscordBot/internal/commands"
+	"NEEI-DiscordBot/internal/config"
+	"NEEI-DiscordBot/internal/logger"
 
 	"github.com/rs/zerolog/log"
 )
@@ -21,7 +22,7 @@ func main() {
 	defer stop()
 
 	// Iniciamos o logger
-	bot.SetupLogger()
+	logger.SetupLogger()
 	log.Info().Msg("Iniciando NEEI-DiscordBot...")
 
 	// Carregar config primeiro (antes de init())
@@ -32,10 +33,10 @@ func main() {
 	log.Debug().Msgf("Config carregada.")
 
 	// Registamos todos os comandos encontrados
-	commands2.InitCommands(cfg)
+	commands.InitCommands(cfg)
 
 	// Iniciamos o bot
-	discordSession, err := bot.Start(cfg.Token)
+	discordSession, err := bot.Start(ctx, cfg.Token)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Falha ao iniciar bot.")
 	}
@@ -50,7 +51,7 @@ func main() {
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Usar uma goroutine para parar o bot não é necessário, mas garantirmos para futura escalabilidade (DB)
+	// Usar uma goroutine para parar o bot, não é necessário, mas garantirmos para futura escalabilidade (DB)
 	done := make(chan struct{})
 	go func() {
 		// Fechar de forma correta os websockets do bot

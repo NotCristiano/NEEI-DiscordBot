@@ -2,6 +2,8 @@ package bot
 
 import (
 	"NEEI-DiscordBot/internal/commands"
+	"NEEI-DiscordBot/internal/queue"
+	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -9,6 +11,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/zerolog/log"
 )
+
+// maxCooldownDuration é o maior cooldown que qualquer comando pode ter.
+// Usado para limpar entradas expiradas do mapa de cooldowns.
+const maxCooldownDuration = 10 * time.Minute
 
 // Variaveis globais para dar track no cooldown
 var (
@@ -25,6 +31,12 @@ func interactionHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Puxamos as infos do comando
 	cmdData := i.ApplicationCommandData()
+
+	// Proteção contra DMs onde i.Member é nulo
+	if i.Member == nil || i.Member.User == nil {
+		log.Warn().Str("command", cmdData.Name).Msg("Interação recebida sem Member (possível DM). Ignorada.")
+		return
+	}
 
 	// Setup do logger e print do comando recebido
 	logger := log.With().
@@ -58,7 +70,7 @@ func interactionHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 						Msg("Comando em cooldown.")
 
 					// Respondemos com um ephemeral para avisar o user
-					sendEphemeral(s, i, fmt.Sprintf("Comando em cooldown. Tente novamente em %.1f segundos.", remaining.Seconds()))
+					commands.SendEphemeral(s, i, fmt.Sprintf("Comando em cooldown. Tente novamente em %.1f segundos.", remaining.Seconds()))
 					return
 				}
 			}
@@ -89,7 +101,7 @@ func interactionHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 					Strs("required_roles", cmd.RequiredRoles).
 					Msg("Tentativa de comando não autorizado.")
 
-				sendEphemeral(s, i, "Acesso restrito aos cargos autorizados.")
+				commands.SendEphemeral(s, i, "Acesso restrito aos cargos autorizados.")
 				return
 			}
 			logger.Debug().Msg("Comando autorizado.")
@@ -98,33 +110,42 @@ func interactionHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		// Verificamos se o handler existe
 		if cmd.Handler == nil {
 			logger.Error().Msg("Comando existe no mapa mas Handler é nulo.")
-			sendEphemeral(s, i, "Erro interno do bot.")
+			commands.SendEphemeral(s, i, "Erro interno do bot.")
 			return
 		}
 
 		logger.Info().Msg("Comando handler a ser executado.")
 
-		// Executamos o comando
-		// cmd.Handler(s, i)
-
-		Enqueue(s, i, cmd.Handler)
+		// Damos enqueue no comando
+		queue.Enqueue(s, i, cmd.Handler)
 	} else {
 		// Caso do comando não existir
 		logger.Warn().Msg("Interação recebida para comando desconhecido.")
-		sendEphemeral(s, i, "Comando desconhecido.")
+		commands.SendEphemeral(s, i, "Comando desconhecido.")
 
 	}
 }
 
-func sendEphemeral(s *discordgo.Session, i *discordgo.InteractionCreate, msg string) {
-	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content: msg,
-			Flags:   discordgo.MessageFlagsEphemeral,
-		},
-	})
-	if err != nil {
-		log.Error().Err(err).Str("component", "interactionHandler").Msg("Erro ao responder ao comando (Ephemeral).")
-	}
+// startCooldownCleaner inicia uma goroutine que periodicamente limpa entradas expiradas do mapa de cooldowns
+func startCooldownCleaner(ctx context.Context) {
+	go func() {
+		ticker := time.NewTicker(1 * time.Minute)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				now := time.Now()
+				cooldownMutex.Lock()
+				for key, lastExec := range userCooldowns {
+					if now.Sub(lastExec) > maxCooldownDuration {
+						delete(userCooldowns, key)
+					}
+				}
+				cooldownMutex.Unlock()
+			}
+		}
+	}()
 }

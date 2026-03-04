@@ -17,15 +17,15 @@ func init() {
 				Description: "Retorna 'Hello World!'",
 				Options:     []*discordgo.ApplicationCommandOption{},
 			},
-			Handler:       HelloHandler,
+			Handler:       helloHandler,
 			RequiredRoles: nil,
 			Cooldown:      0 * time.Second,
 		}
 	})
 }
 
-// HelloHandler contém a lógica do comando
-func HelloHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
+// helloHandler contém a lógica do comando
+func helloHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{Content: "Hello World!"}})
