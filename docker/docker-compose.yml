@@ -1,0 +1,8 @@
+services:
+  bot:
+    image: ghcr.io/notcristiano/neei-discordbot:latest
+    restart: unless-stopped
+    env_file:
+      - ../local.env
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"

@@ -23,9 +23,14 @@ func LoadConfig() (*Config, error) {
 	viper.SetConfigType("env")
 	viper.AddConfigPath(".")
 
-	// Caso quisermos usar docker
-	viper.SetEnvPrefix("NEEI")
+	// Lê variáveis de ambiente diretamente (TOKEN, ROLE_DEV, etc.)
 	viper.AutomaticEnv()
+
+	// Bind explícito para que Unmarshal() consiga ler env vars (necessário para Docker)
+	viper.BindEnv("TOKEN")
+	viper.BindEnv("ROLE_DEV")
+	viper.BindEnv("ROLE_DIRECAO")
+	viper.BindEnv("ROLE_NEEI")
 
 	// Ajuda se tivermos nested keys
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
