@@ -12,9 +12,9 @@ func init() {
 		return BotCommand{
 
 			Definition: &discordgo.ApplicationCommand{
-				Name:		 "kick",
+				Name:        "kick",
 				Description: "Expulsa um user especifico",
-				Options: 	  []*discordgo.ApplicationCommandOption{
+				Options: []*discordgo.ApplicationCommandOption{
 					{
 						Type: discordgo.ApplicationCommandOptionUser,
 						Name: "membro", Description: "Membro a ser expulso",
@@ -22,7 +22,7 @@ func init() {
 					},
 				},
 			},
-			
+
 			Handler:       kickHandler,
 			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao},
 			Cooldown:      5 * time.Second,
