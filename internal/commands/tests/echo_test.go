@@ -1,7 +1,8 @@
-package commands
+package tests
 
 import (
 	"NEEI-DiscordBot/internal/config"
+	"NEEI-DiscordBot/internal/commands"
 	"testing"
 	"time"
 
@@ -17,11 +18,11 @@ func TestEchoCommand(t *testing.T) {
 	}
 
 	// Buscamos o comando
-	var commandFound BotCommand
+	var commandFound commands.BotCommand
 	found := false
 
 	// Iteramos sobre os comandos
-	for _, cmdConfig := range ComandosLista {
+	for _, cmdConfig := range commands.ComandosLista {
 		cmd := cmdConfig(mockConfig)
 		if cmd.Definition.Name == "echo" {
 			commandFound = cmd
