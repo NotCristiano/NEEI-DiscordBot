@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"NEEI-DiscordBot/internal/config"
 	"NEEI-DiscordBot/internal/commands"
+	"NEEI-DiscordBot/internal/config"
 	"testing"
 	"time"
 )
