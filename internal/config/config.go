@@ -10,10 +10,16 @@ import (
 )
 
 type Config struct {
-	Token       string `mapstructure:"TOKEN"`
-	RoleDev     string `mapstructure:"ROLE_DEV"`
-	RoleDirecao string `mapstructure:"ROLE_DIRECAO"`
-	RoleNEEI    string `mapstructure:"ROLE_NEEI"`
+	Token           string `mapstructure:"TOKEN"`
+	RoleDev         string `mapstructure:"ROLE_DEV"`
+	RoleDirecao     string `mapstructure:"ROLE_DIRECAO"`
+	RoleNEEI        string `mapstructure:"ROLE_NEEI"`
+	RoleTecnologico string `mapstructure:"ROLE_DEPTEC"`
+	RoleApoio       string `mapstructure:"ROLE_DEPAPE"`
+	RoleImagem      string `mapstructure:"ROLE_DEPIMG"`
+	RoleEventos     string `mapstructure:"ROLE_DEPEV"`
+	RoleAssembleia  string `mapstructure:"ROLE_DEPASSEMBLEIA"`
+	RoleFiscal      string `mapstructure:"ROLE_DEPFISCAL"`
 }
 
 func LoadConfig() (*Config, error) {
