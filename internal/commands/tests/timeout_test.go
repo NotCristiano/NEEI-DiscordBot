@@ -1,6 +1,7 @@
-package commands
+package tests
 
 import (
+	"NEEI-DiscordBot/internal/commands"
 	"NEEI-DiscordBot/internal/config"
 	"testing"
 	"time"
@@ -16,11 +17,11 @@ func TestCommandTimeout(t *testing.T) {
 	}
 
 	// Buscamos o comando
-	var commandFound BotCommand
+	var commandFound commands.BotCommand
 	found := false
 
 	// Iteramos sobre os comandos
-	for _, cmdConfig := range ComandosLista {
+	for _, cmdConfig := range commands.ComandosLista {
 		cmd := cmdConfig(mockConfig)
 		if cmd.Definition.Name == "timeout" {
 			commandFound = cmd
