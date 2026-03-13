@@ -71,7 +71,6 @@ func banHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		SendEphemeral(s, i, "ERRO: Falha ao banir membro.")
 		return
 	}
-	
+
 	SendEphemeral(s, i, "Membro foi banido com sucesso.")
 }
-
