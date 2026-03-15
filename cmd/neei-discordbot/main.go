@@ -36,7 +36,7 @@ func main() {
 	commands.InitCommands(cfg)
 
 	// Iniciamos o bot
-	discordSession, err := bot.Start(ctx, cfg.Token)
+	discordSession, err := bot.Start(ctx, cfg.Token, cfg)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Falha ao iniciar bot.")
 	}

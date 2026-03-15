@@ -67,11 +67,21 @@ func timeoutHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	// Calculamos até quando o timeout deve ocorrer
-	timeoutUntil := time.Now().Add(duration)
+	/*
+		// Calculamos até quando o timeout deve ocorrer
+		timeoutUntil := time.Now().Add(duration)
 
-	// Editamos o user com GuildMemberEdit
-	err = s.GuildMemberTimeout(i.GuildID, targetUser.ID, &timeoutUntil)
+		// Editamos o user com GuildMemberEdit
+		err = s.GuildMemberTimeout(i.GuildID, targetUser.ID, &timeoutUntil)
+		if err != nil {
+			SendEphemeral(s, i, "ERRO: Falha ao colocar o membro em timeout.")
+			logger.Error().Err(err).Str("component", "commandTimeout").Msg("Erro ao colocar o membro em timeout.")
+			return
+		}
+	*/
+
+	// Aplicamos o timeout usando a função dedicada
+	err = ApplyTimeout(s, i.GuildID, targetUser.ID, duration)
 	if err != nil {
 		SendEphemeral(s, i, "ERRO: Falha ao colocar o membro em timeout.")
 		logger.Error().Err(err).Str("component", "commandTimeout").Msg("Erro ao colocar o membro em timeout.")
@@ -82,4 +92,17 @@ func timeoutHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	SendEphemeral(s, i, "**"+targetUser.Username+"** colocado em timeout com sucesso.")
 	logger.Info().Str("component", "commandTimeout").Msg(targetUser.Username + " colocado em timeout por " + durationStr + ".")
 
+}
+
+func ApplyTimeout(s *discordgo.Session, guildID, userID string, duration time.Duration) error {
+
+	// Calculamos até quando o timeout deve ocorrer
+	timeoutUntil := time.Now().Add(duration)
+
+	// Editamos o user com GuildMemberEdit
+	err := s.GuildMemberTimeout(guildID, userID, &timeoutUntil)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -16,7 +16,7 @@ import (
 // Usado para limpar entradas expiradas do mapa de cooldowns.
 const maxCooldownDuration = 10 * time.Minute
 
-// Variaveis globais para dar track no cooldown
+// Variáveis globais para dar track no cooldown
 var (
 	// Formato mapa: UserID: NomeComando -> Ultima execução do comando
 	userCooldowns = make(map[string]time.Time)
