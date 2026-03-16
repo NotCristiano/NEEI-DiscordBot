@@ -2,6 +2,7 @@ package bot
 
 import (
 	"NEEI-DiscordBot/internal/commands"
+	"NEEI-DiscordBot/internal/config"
 	"NEEI-DiscordBot/internal/queue"
 	"context"
 	"fmt"
@@ -12,7 +13,7 @@ import (
 )
 
 // Start função para iniciar o bot
-func Start(ctx context.Context, token string) (*discordgo.Session, error) {
+func Start(ctx context.Context, token string, cfg *config.Config) (*discordgo.Session, error) {
 
 	// Damos setup no logger e colocamos uma tag do componente
 	logger := log.With().Str("component", "bot").Logger()
@@ -33,6 +34,7 @@ func Start(ctx context.Context, token string) (*discordgo.Session, error) {
 
 	// Chamamos o handler de eventos antes de iniciar o bot
 	goBot.AddHandler(interactionHandler)
+	goBot.AddHandler(messageCreateHandler(cfg))
 	logger.Debug().Msg("Handler de eventos registado.")
 
 	// Se o erro for nulo, o bot foi iniciado com sucesso
