@@ -2,6 +2,7 @@ package bot
 
 import (
 	"NEEI-DiscordBot/internal/commands"
+	"NEEI-DiscordBot/internal/config"
 	"NEEI-DiscordBot/internal/queue"
 	"context"
 	"fmt"
@@ -23,12 +24,23 @@ var (
 	cooldownMutex sync.Mutex
 )
 
-func interactionHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	// Se não for um comando, ignoramos
-	if i.Type != discordgo.InteractionApplicationCommand {
-		return
-	}
+func interactionHandler(cfg *config.Config) func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	return func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
+		switch i.Type {
+		case discordgo.InteractionApplicationCommand:
+			handleSlashCommands(s, i)
+		case discordgo.InteractionMessageComponent:
+			handleButtonInteraction(s, i)
+		case discordgo.InteractionModalSubmit:
+			handleModalSubmit(s, i, cfg)
+		default:
+			log.Warn().Str("interaction_type", string(i.Type)).Msg("Interação recebida de tipo desconhecido. Ignorada.")
+		}
+	}
+}
+
+func handleSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// Puxamos as infos do comando
 	cmdData := i.ApplicationCommandData()
 
@@ -123,6 +135,70 @@ func interactionHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		logger.Warn().Msg("Interação recebida para comando desconhecido.")
 		commands.SendEphemeral(s, i, "Comando desconhecido.")
 
+	}
+}
+
+func handleButtonInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	data := i.MessageComponentData()
+
+	switch data.CustomID {
+	case "ticketCreateButton":
+		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseModal,
+			Data: &discordgo.InteractionResponseData{
+				CustomID: "ticketCreationModal",
+				Title:    "Criar Ticket",
+				Components: []discordgo.MessageComponent{
+					discordgo.ActionsRow{
+						Components: []discordgo.MessageComponent{
+							discordgo.TextInput{
+								CustomID:    "ticketReason",
+								Label:       "Descreva o seu problema:",
+								Style:       discordgo.TextInputParagraph,
+								Placeholder: "Ex. Não consigo falar no canal de voz, ou tenho uma sugestão para o servidor.",
+								Required:    true,
+								MinLength:   10,
+								MaxLength:   2000,
+							},
+						},
+					},
+				},
+			},
+		})
+	case "ticketCloseButton":
+		_, err := s.ChannelDelete(i.ChannelID)
+		if err != nil {
+			log.Error().Err(err).Msg("Erro ao fechar ticket.")
+			commands.SendEphemeral(s, i, "Erro interno do bot.")
+			return
+		}
+
+		log.Info().Str("channel_id", i.ChannelID).Msg("Ticket fechado.")
+	default:
+		log.Warn().Str("custom_id", data.CustomID).Msg("Interação de botão recebida com CustomID desconhecido. Ignorada.")
+		commands.SendEphemeral(s, i, "Ação desconhecida.")
+	}
+}
+
+func handleModalSubmit(s *discordgo.Session, i *discordgo.InteractionCreate, cfg *config.Config) {
+	data := i.ModalSubmitData()
+
+	switch data.CustomID {
+	case "ticketCreationModal":
+		description := data.Components[0].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
+
+		channel, err := s.Channel(i.ChannelID)
+		if err != nil {
+			log.Error().Err(err).Msg("Erro ao obter canal para ticket.")
+			commands.SendEphemeral(s, i, "Erro interno do bot.")
+			return
+		}
+
+		createTicket(s, i, description, channel.ParentID, cfg)
+
+	default:
+		log.Warn().Str("custom_id", data.CustomID).Msg("Interação de modal recebida com CustomID desconhecido. Ignorada.")
+		commands.SendEphemeral(s, i, "Ação desconhecida.")
 	}
 }
 

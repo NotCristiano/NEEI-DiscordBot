@@ -33,7 +33,7 @@ func Start(ctx context.Context, token string, cfg *config.Config) (*discordgo.Se
 	}
 
 	// Chamamos o handler de eventos antes de iniciar o bot
-	goBot.AddHandler(interactionHandler)
+	goBot.AddHandler(interactionHandler(cfg))
 	goBot.AddHandler(messageCreateHandler(cfg))
 	logger.Debug().Msg("Handler de eventos registado.")
 
