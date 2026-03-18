@@ -30,6 +30,7 @@ func init() {
 			Handler:       timeoutHandler,
 			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao},
 			Cooldown:      3 * time.Second,
+			Ephemeral:     true,
 		}
 	})
 }
@@ -54,7 +55,7 @@ func timeoutHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// Damos parse no tempo
 	duration, err := time.ParseDuration(durationStr)
 	if err != nil {
-		SendEphemeral(s, i, "ERRO: Formato de tempo inválido (e.g 1h, 15m, 20s).")
+		EditDeferredResponse(s, i, "ERRO: Formato de tempo inválido (e.g 1h, 15m, 20s).")
 		logger.Error().Err(err).Str("component", "commandTimeout").Msg("Erro ao formatar tempo.")
 		return
 	}
@@ -62,34 +63,21 @@ func timeoutHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// Verificamos se é maior do que o limite do discord (>24d)
 	// https://discordjs.guide/legacy/popular-topics/faq
 	if duration.Hours() > 24*28 {
-		SendEphemeral(s, i, "ERRO: Não é possível colocar um timeout maior que 28 dias.")
+		EditDeferredResponse(s, i, "ERRO: Não é possível colocar um timeout maior que 28 dias.")
 		logger.Warn().Msg("Tentativa de timeout muito grande.")
 		return
 	}
 
-	/*
-		// Calculamos até quando o timeout deve ocorrer
-		timeoutUntil := time.Now().Add(duration)
-
-		// Editamos o user com GuildMemberEdit
-		err = s.GuildMemberTimeout(i.GuildID, targetUser.ID, &timeoutUntil)
-		if err != nil {
-			SendEphemeral(s, i, "ERRO: Falha ao colocar o membro em timeout.")
-			logger.Error().Err(err).Str("component", "commandTimeout").Msg("Erro ao colocar o membro em timeout.")
-			return
-		}
-	*/
-
 	// Aplicamos o timeout usando a função dedicada
 	err = ApplyTimeout(s, i.GuildID, targetUser.ID, duration)
 	if err != nil {
-		SendEphemeral(s, i, "ERRO: Falha ao colocar o membro em timeout.")
+		EditDeferredResponse(s, i, "ERRO: Falha ao colocar o membro em timeout.")
 		logger.Error().Err(err).Str("component", "commandTimeout").Msg("Erro ao colocar o membro em timeout.")
 		return
 	}
 
 	// Enviamos uma mensagem ephemeral de sucesso
-	SendEphemeral(s, i, "**"+targetUser.Username+"** colocado em timeout com sucesso.")
+	EditDeferredResponse(s, i, "**"+targetUser.Username+"** colocado em timeout com sucesso.")
 	logger.Info().Str("component", "commandTimeout").Msg(targetUser.Username + " colocado em timeout por " + durationStr + ".")
 
 }

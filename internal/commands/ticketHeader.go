@@ -19,6 +19,7 @@ func init() {
 			Handler:       ticketHeaderHandler,
 			RequiredRoles: nil,
 			Cooldown:      5 * time.Second,
+			Ephemeral:     true,
 		}
 
 	})
@@ -33,7 +34,7 @@ func ticketHeaderHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		Color:       0x970302,
 		Footer: &discordgo.MessageEmbedFooter{
 			Text:    "Núcleo de Estudantes de Engenharia Informática",
-			IconURL: "https://example.com/logo.png",
+			IconURL: "https://www.cm-evora.pt/wp-content/uploads/2021/09/NEEI.jpg",
 		},
 	}
 
@@ -48,7 +49,7 @@ func ticketHeaderHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	// Agora juntamos embed e button para enviar
-	SendEphemeral(s, i, "Header criado com sucesso!")
+	EditDeferredResponse(s, i, "Header criado com sucesso!")
 	s.ChannelMessageSendComplex(i.ChannelID, &discordgo.MessageSend{
 		Embeds: []*discordgo.MessageEmbed{embed},
 		Components: []discordgo.MessageComponent{

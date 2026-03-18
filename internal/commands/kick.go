@@ -26,6 +26,7 @@ func init() {
 			Handler:       kickHandler,
 			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao},
 			Cooldown:      5 * time.Second,
+			Ephemeral:     true,
 		}
 	})
 }
@@ -38,16 +39,16 @@ func kickHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Verifica se o ID de user a sere expulso é o mesmo do User que invocou a interação
 	if user.ID == i.Member.User.ID {
-		SendEphemeral(s, i, "Não te podes expulsar a ti próprio.")
+		EditDeferredResponse(s, i, "Não te podes expulsar a ti próprio.")
 		return
 	}
 
 	// Execução comando
 	err := s.GuildMemberDelete(i.GuildID, user.ID)
 	if err != nil {
-		SendEphemeral(s, i, "ERRO: Falha ao expulsar membro.")
+		EditDeferredResponse(s, i, "ERRO: Falha ao expulsar membro.")
 		return
 	}
 
-	SendEphemeral(s, i, "Membro expulso com sucesso.")
+	EditDeferredResponse(s, i, "Membro expulso com sucesso.")
 }
