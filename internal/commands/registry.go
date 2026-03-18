@@ -14,6 +14,7 @@ type BotCommand struct {
 	Handler       func(s *discordgo.Session, i *discordgo.InteractionCreate)
 	RequiredRoles []string
 	Cooldown      time.Duration
+	Ephemeral     bool
 }
 
 // CommandConfig é um type que precisa da config para retornar um comando

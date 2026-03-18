@@ -36,6 +36,7 @@ func init() {
 			Handler:       banHandler,
 			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao},
 			Cooldown:      5 * time.Second,
+			Ephemeral:     true,
 		}
 	})
 }
@@ -50,27 +51,27 @@ func banHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Verifica se o ID de user a ser banido é o mesmo do User que invocou a interação
 	if user.ID == i.Member.User.ID {
-		SendEphemeral(s, i, "Não te podes banir a ti próprio.")
+		EditDeferredResponse(s, i, "Não te podes banir a ti próprio.")
 		return
 	}
 
 	// Verifica tempo de banimento
 	if days <= 0 {
-		SendEphemeral(s, i, "O tempo de ban tem que ser superior a 0 dias")
+		EditDeferredResponse(s, i, "O tempo de ban tem que ser superior a 0 dias")
 		return
 	}
 
 	if len(reason) <= 0 {
-		SendEphemeral(s, i, "Não podes banir um membro sem razão")
+		EditDeferredResponse(s, i, "Não podes banir um membro sem razão")
 		return
 	}
 
 	// Execução comando
 	err := s.GuildBanCreateWithReason(i.GuildID, user.ID, reason, days)
 	if err != nil {
-		SendEphemeral(s, i, "ERRO: Falha ao banir membro.")
+		EditDeferredResponse(s, i, "ERRO: Falha ao banir membro.")
 		return
 	}
 
-	SendEphemeral(s, i, "Membro foi banido com sucesso.")
+	EditDeferredResponse(s, i, "Membro foi banido com sucesso.")
 }

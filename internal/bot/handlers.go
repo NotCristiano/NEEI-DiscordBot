@@ -128,6 +128,12 @@ func handleSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 		logger.Info().Msg("Comando handler a ser executado.")
 
+		// ACK imediato para o token não expirar enquanto o comando é processado
+		if err := commands.DeferResponse(s, i, cmd.Ephemeral); err != nil {
+			logger.Error().Err(err).Msg("Falha ao defer a resposta da interação.")
+			return
+		}
+
 		// Damos enqueue no comando
 		queue.Enqueue(s, i, cmd.Handler)
 	} else {
@@ -185,12 +191,16 @@ func handleModalSubmit(s *discordgo.Session, i *discordgo.InteractionCreate, cfg
 
 	switch data.CustomID {
 	case "ticketCreationModal":
+		if err := commands.DeferResponse(s, i, true); err != nil {
+			return
+		}
+
 		description := data.Components[0].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
 
 		channel, err := s.Channel(i.ChannelID)
 		if err != nil {
 			log.Error().Err(err).Msg("Erro ao obter canal para ticket.")
-			commands.SendEphemeral(s, i, "Erro interno do bot.")
+			commands.EditDeferredResponse(s, i, "Erro interno do bot.")
 			return
 		}
 

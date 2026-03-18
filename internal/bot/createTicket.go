@@ -16,13 +16,13 @@ func createTicket(s *discordgo.Session, i *discordgo.InteractionCreate, descript
 	exists, err := ticketExists(s, guildID, categoryID, userName)
 	if err != nil {
 		log.Error().Err(err).Str("component", "createTicket").Msg("Erro ao verificar existência de ticket.")
-		commands.SendEphemeral(s, i, "Erro interno do bot, tente novamente mais tarde.")
+		commands.EditDeferredResponse(s, i, "Erro interno do bot, tente novamente mais tarde.")
 		return
 	}
 
 	if exists {
 		log.Info().Str("user", userName).Msg("Utilizador tentou criar um ticket, mas já existe um aberto.")
-		commands.SendEphemeral(s, i, "Já tens um ticket aberto. Por favor fecha o ticket atual antes de abrir um novo.")
+		commands.EditDeferredResponse(s, i, "Já tens um ticket aberto. Por favor fecha o ticket atual antes de abrir um novo.")
 		return
 	}
 
@@ -54,10 +54,11 @@ func createTicket(s *discordgo.Session, i *discordgo.InteractionCreate, descript
 
 	if err != nil {
 		log.Error().Err(err).Str("component", "createTicket").Msg("Erro ao criar canal de ticket.")
-		commands.SendEphemeral(s, i, "Ocorreu um erro ao criar o ticket. Por favor tenta novamente mais tarde.")
+		commands.EditDeferredResponse(s, i, "Ocorreu um erro ao criar o ticket. Por favor tenta novamente mais tarde.")
+		return
 	}
 
-	commands.SendEphemeral(s, i, "Ticket criado com sucesso! Dirige-te ao canal "+channel.Mention()+".")
+	commands.EditDeferredResponse(s, i, "Ticket criado com sucesso! Dirige-te ao canal "+channel.Mention()+".")
 	initTicketMessage(s, description, channel.ID)
 	log.Info().Str("channel", channel.ID).Msg("Canal de ticket criado com sucesso!")
 }
@@ -70,7 +71,7 @@ func initTicketMessage(s *discordgo.Session, description string, channelID strin
 		Color:       0x970302,
 		Footer: &discordgo.MessageEmbedFooter{
 			Text:    "Núcleo de Estudantes de Engenharia Informática",
-			IconURL: "https://example.com/logo.png",
+			IconURL: "https://www.cm-evora.pt/wp-content/uploads/2021/09/NEEI.jpg",
 		},
 	}
 

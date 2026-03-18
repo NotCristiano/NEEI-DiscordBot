@@ -20,13 +20,12 @@ func init() {
 			Handler:       helloHandler,
 			RequiredRoles: nil,
 			Cooldown:      0 * time.Second,
+			Ephemeral:     false,
 		}
 	})
 }
 
 // helloHandler contém a lógica do comando
 func helloHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{Content: "Hello World!"}})
+	EditDeferredResponse(s, i, "Hello World!")
 }

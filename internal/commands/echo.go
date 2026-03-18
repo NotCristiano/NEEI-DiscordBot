@@ -25,6 +25,7 @@ func init() {
 			Handler:       echoHandler,
 			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao},
 			Cooldown:      5 * time.Second,
+			Ephemeral:     false,
 		}
 	})
 }
@@ -34,10 +35,5 @@ func echoHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Extraimos o texto do comando, a mensagem a ser repetida vai estar na primeira posição
 	msg := i.ApplicationCommandData().Options[0].StringValue()
-
-	// Output do comando
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{Content: msg},
-	})
+	EditDeferredResponse(s, i, msg)
 }
