@@ -1,43 +1,58 @@
 # Guia de Contribuição - NEEI Discord Bot
 
-Este guia serve para garantir que todos trabalhem de forma sincronizada e que o código se mantenha limpo e funcional para os próximos mandátos.
+Este guia existe para manter o trabalho sincronizado e o código limpo, consistente e funcional.
 
-## Como Começar
+## Quick Start
 
-Se é a primeira vez que vais contribuir, seguem os passos:
+Se é a tua primeira contribuição, segue estes passos:
 
-1.  **Clonar o Repositório:**
-    ```bash
-    git clone https://github.com/NotCristiano/NEEI-DiscordBot.git
-    cd NEEI-DiscordBot
-    ```
+1. **Clonar o repositório:**
+   ```bash
+   git clone https://github.com/NotCristiano/NEEI-DiscordBot.git
+   cd NEEI-DiscordBot
+   ```
 
-2.  **Configurar Variáveis Locais:**
-    Cria um ficheiro chamado `local.env` na raiz do projeto (este ficheiro é ignorado pelo Git).
+2. **Instalar dependências:**
+   ```bash
+   go mod download
+   ```
 
-    Dados usádos não serão revelados, mas contém a seguinte estrutura:
-    ```env
-    TOKEN=TOKEN_DE_TESTE
-    ROLE_DEV=123456789
-    ROLE_DIRECAO=987654321
-    ROLE_NEEI=1122334455
-    ```
+3. **Criar o ficheiro `local.env`:**
+   O ficheiro deve estar na raiz do projeto e é ignorado pelo Git.
 
-3.  **Executar o Bot:**
-    ```bash
-    go run cmd/neei-discordbot/main.go
-    ```
+   > Nota: `TOKEN` é obrigatório. As restantes variáveis dependem das funcionalidades que quiseres testar.
+
+   ```env
+   TOKEN=TOKEN_DE_TESTE
+   SERVER_ID=123456789012345678
+   ROLE_DEV=123456789012345678
+   ROLE_DIRECAO=123456789012345678
+   ROLE_NEEI=123456789012345678
+   ROLE_DEPTEC=123456789012345678
+   ROLE_DEPAPE=123456789012345678
+   ROLE_DEPIMG=123456789012345678
+   ROLE_DEPEV=123456789012345678
+   ROLE_DEPASSEMBLEIA=123456789012345678
+   ROLE_DEPFISCAL=123456789012345678
+   FORBIDDEN_CHANNEL_ID=123456789012345678
+   AUTO_MUTE_DURATION=10
+   ```
+
+4. **Executar o bot:**
+   ```bash
+   go run cmd/neei-discordbot/main.go
+   ```
 
 ---
 
 ## Como contribuir
 
-A arquitetura do bot é modular. Para criar um comando novo, **só é necessário criar um ficheiro**.
+A arquitetura do bot é modular. Para criar um comando novo, **normalmente basta criar um ficheiro**.
 
 **Regras:**
-1. O ficheiro deve ir para: `internal/commands/`.
+1. O ficheiro deve ficar em `internal/commands/`.
 2. O package deve ser `package commands`.
-3. Tens de usar a função `init()` para registar o comando automaticamente. 
+3. Tens de usar a função `init()` para registar o comando automaticamente.
 4. É obrigatório cada comando ter um teste.
 
 **Exemplo de Comando (Hello):**
@@ -52,40 +67,40 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// Automaticamente registamos o comando e especificamos os dados e restrições
+// Registamos o comando e respetivas restrições
 func init() {
 	AddCommand(func(cfg *config.Config) BotCommand {
 		return BotCommand{
-
-			// Descrição que vai aparecer no discord
+			// Descrição apresentada no Discord
 			Definition: &discordgo.ApplicationCommand{
 				Name:        "hello",
 				Description: "Retorna 'Hello World!'",
 				Options:     []*discordgo.ApplicationCommandOption{},
 			},
-			Handler:       HelloHandler, // Função que vai ser executada quando o comando for executado
-			RequiredRoles: nil, // Roles que precisam ter para executar o comando (i.e []string{cfg.RoleDev, cfg.RoleDirecao})
-			Cooldown:      0 * time.Second, // Cooldown para o comando
+			Handler:       helloHandler,
+			RequiredRoles: nil,
+			Cooldown:      0 * time.Second,
 		}
 	})
 }
 
-// HelloHandler contém a lógica do comando
-func HelloHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
+// helloHandler contém a lógica do comando
+func helloHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{Content: "Hello World!"}})
 }
 ```
 
-**Exemplo de Teste (Hello.go):**
+**Exemplo de Teste (`hello_test.go`):**
 
-Teste direto na coneçâo entre bot e discord é bastante complexo, portanto vamos apenas testar as informações passadas.
+Testar ligação direta entre bot e Discord é mais complexo, por isso os testes validam a definição e comportamento esperado do comando.
 
 ```go
-package commands
+package tests
 
 import (
+	"NEEI-DiscordBot/internal/commands"
 	"NEEI-DiscordBot/internal/config"
 	"testing"
 	"time"
@@ -100,11 +115,11 @@ func TestHelloCommand(t *testing.T) {
 	}
 
 	// Buscamos o comando
-	var commandFound BotCommand
+	var commandFound commands.BotCommand
 	found := false
 
 	// Iteramos sobre os comandos
-	for _, cmdConfig := range ComandosLista {
+	for _, cmdConfig := range commands.ComandosLista {
 		cmd := cmdConfig(mockConfig)
 		if cmd.Definition.Name == "hello" {
 			commandFound = cmd
@@ -124,9 +139,9 @@ func TestHelloCommand(t *testing.T) {
 		t.Fatalf("Descrição incorreta do comando 'hello'. Esperado: %s, Encontrado: %s ", expectedDesc, commandFound.Definition.Description)
 	}
 
-	// Verifica se o Handler existe
+	// Verifica se o handler existe
 	if commandFound.Handler == nil {
-		t.Fatal("O Handler do comando é nulo.")
+		t.Fatal("O handler do comando é nulo.")
 	}
 
 	// Verifica as roles requeridas (neste caso hello não tem)
@@ -144,16 +159,30 @@ func TestHelloCommand(t *testing.T) {
 
 ---
 
+## Comandos de validação
+
+Antes de abrir PR, valida o código localmente:
+
+```bash
+go fmt ./...
+go test ./...
+go vet ./...
+```
+
+Se estiveres a trabalhar em Docker, podes também usar os comandos do `Makefile` descritos no `README.md`.
+
+---
+
 ## Fluxo de Trabalho
 
 Para manter a `main` estável, seguimos estas regras:
 
-1.  **Nunca será feito um push direto na `main`.**
-2. **Usar o `.gitignore` fornecido para não dar leak em tokens.**
-3. **Cria uma Branch:**
+1. **Nunca faças push direto para a `main`.**
+2. **Usa o `.gitignore` para evitar exposição de tokens e ficheiros locais.**
+3. **Cria uma branch:**
     * Funcionalidade nova: `feat/nome-do-comando` (ex: `feat/ping`)
     * Correção de erro: `fix/nome-do-erro` (ex: `fix/typo-ping`)
-4. **Testa Localmente:** Garante que o bot liga e o comando funciona.
+4. **Testa localmente:** garante que o bot liga e o comando funciona.
 5. **Abre um Pull Request (PR):**
     * No GitHub, abre um PR da tua branch para a `main`.
     * Adiciona uma descrição do que fizeste.
@@ -161,12 +190,25 @@ Para manter a `main` estável, seguimos estas regras:
 
 ---
 
+## Checklist de PR
+
+Antes de submeter, confirma:
+
+- [ ] Código formatado com `go fmt ./...`
+- [ ] Testes a passar com `go test ./...`
+- [ ] Sem `fmt.Println` (usar `zerolog`)
+- [ ] Sem tokens, IDs sensíveis ou segredos no PR
+- [ ] Comando novo registado com `init()` e com teste
+- [ ] Descrição do PR clara (o que mudou e porquê)
+
+---
+
 ## Estilo de Código e Regras
 
-O PR será reprovado se o código se não seguir isto:
+O PR pode ser reprovado se o código não seguir estas regras:
 
 1.  **Formatação:**
-    * O código **tem** de estar formatado com `gofmt`.
+	* O código **tem** de estar formatado com `gofmt`.
     * Isto pode ser automatizado na tua IDE de escolha.
     * Ou corre manualmente: `go fmt ./...`
 
@@ -175,5 +217,6 @@ O PR será reprovado se o código se não seguir isto:
     * Usa o logger `zerolog` que já está no projeto.
 
 3.  **Testes:**
-    * Antes de enviares, corre `go test ./...` para garantir que não partiste nada. Mesmo que existam testes automáticos é boa prática.
+	* Antes de enviares, corre `go test ./...` para garantir que não partiste nada.
+	* Mesmo com testes automáticos, validar localmente continua a ser boa prática.
 
