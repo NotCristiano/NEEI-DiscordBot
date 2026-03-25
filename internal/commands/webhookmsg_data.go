@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -23,7 +22,7 @@ type LinkSection struct {
 
 // Títulos e descrições fixos por secção (apenas metadados da mensamge embed, os links vêm da leitura do canal)
 var SectionMeta = map[string]LinkSection{
-	"links_uteis": {
+	"links-uteis": {
 		Title:       "Links Úteis",
 		Description: "Links gerais úteis para o teu percurso académico na Universidade de Évora ao lado do NEEI-UÉ.",
 		Color:       0xffffff,
@@ -114,12 +113,4 @@ func ParseLinksFromMessages(messages []*discordgo.Message) map[string]LinkSectio
 	}
 
 	return result
-}
-
-// getMoodleURL gera o URL do Moodle com o ano letivo atual automaticamente
-func getMoodleURL() string {
-	// Nota: importa "time" no ficheiro que chamar esta função se necessário
-	// Esta função é um helper para usar nos links do canal como referência
-	_ = fmt.Sprintf // evita import não usado
-	return "Ver canal de links para o URL atualizado"
 }

@@ -32,6 +32,7 @@ func TestWebhookmsgCommand(t *testing.T) {
 	if !found {
 		t.Fatal("O comando 'webhookmsg' não foi encontrado.")
 	}
+
 	// Verifica a Descrição
 	if commandFound.Definition.Description != "Envia uma secção de links úteis para um canal específico" {
 		t.Fatalf("Descrição incorreta: %s", commandFound.Definition.Description)
@@ -47,12 +48,12 @@ func TestWebhookmsgCommand(t *testing.T) {
 		t.Fatalf("Devia ter 2 roles requeridas, mas tem: %d", len(commandFound.RequiredRoles))
 	}
 
-	// Verifica o nome das roles requeridas
+	// Verifica o número de opções
 	if len(commandFound.Definition.Options) != 2 {
 		t.Fatalf("Devia ter 2 opções, mas tem: %d", len(commandFound.Definition.Options))
 	}
 
-	// Verifica o nome das opções
+	// Verifica o nome da primeira opção
 	if commandFound.Definition.Options[0].Name != "secao" {
 		t.Fatalf("Primeira opção devia ser 'secao', mas é: %s", commandFound.Definition.Options[0].Name)
 	}
@@ -67,7 +68,7 @@ func TestWebhookmsgCommand(t *testing.T) {
 		t.Fatalf("Devia ter 4 choices, mas tem: %d", len(commandFound.Definition.Options[0].Choices))
 	}
 
-	// Verifica os valores das choices da primeira opção
+	// Verifica o cooldown
 	if commandFound.Cooldown != 5*time.Second {
 		t.Fatalf("O cooldown devia ser 5s, mas é: %s", commandFound.Cooldown)
 	}
@@ -75,7 +76,7 @@ func TestWebhookmsgCommand(t *testing.T) {
 
 // TestWebhookLinkSections verifica se as secções de links estão corretamente definidas e têm os campos necessários
 func TestWebhookLinkSections(t *testing.T) {
-	expectedSections := []string{"links_uteis", "drives-resumos", "genericos", "redes-sociais"}
+	expectedSections := []string{"links-uteis", "drives-resumos", "genericos", "redes-sociais"}
 
 	// Verifica se todas as secções esperadas estão presentes e têm título e descrição
 	for _, key := range expectedSections {
