@@ -23,6 +23,7 @@
 | `ROLE_DEPASSEMBLEIA` | Não | ID do cargo de Assembleia |
 | `ROLE_DEPFISCAL` | Não | ID do cargo do Conselho Fiscal |
 | `FORBIDDEN_CHANNEL_ID` | Não | ID do canal com regras de mute automático |
+| `LINKS_CHANNEL_ID` | Não | ID do canal que fornece os links |
 | `AUTO_MUTE_DURATION` | Não | Duração do mute automático (em minutos) |
 
 Exemplo rápido de `local.env`:
