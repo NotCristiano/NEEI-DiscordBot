@@ -6,6 +6,7 @@ import (
 	"NEEI-DiscordBot/internal/queue"
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -31,7 +32,7 @@ func interactionHandler(cfg *config.Config) func(s *discordgo.Session, i *discor
 		case discordgo.InteractionApplicationCommand:
 			handleSlashCommands(s, i)
 		case discordgo.InteractionMessageComponent:
-			handleButtonInteraction(s, i)
+			handleButtonInteraction(s, i, cfg)
 		case discordgo.InteractionModalSubmit:
 			handleModalSubmit(s, i, cfg)
 		default:
@@ -144,7 +145,7 @@ func handleSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 }
 
-func handleButtonInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func handleButtonInteraction(s *discordgo.Session, i *discordgo.InteractionCreate, cfg *config.Config) {
 	data := i.MessageComponentData()
 
 	switch data.CustomID {
@@ -181,6 +182,11 @@ func handleButtonInteraction(s *discordgo.Session, i *discordgo.InteractionCreat
 
 		log.Info().Str("channel_id", i.ChannelID).Msg("Ticket fechado.")
 	default:
+		// Verifica se é um botão de navegação do comando links
+		if strings.HasPrefix(data.CustomID, "links_prev_") || strings.HasPrefix(data.CustomID, "links_next_") {
+			handleLinksNavigation(s, i, cfg)
+			return
+		}
 		log.Warn().Str("custom_id", data.CustomID).Msg("Interação de botão recebida com CustomID desconhecido. Ignorada.")
 		commands.SendEphemeral(s, i, "Ação desconhecida.")
 	}
@@ -234,4 +240,57 @@ func startCooldownCleaner(ctx context.Context) {
 			}
 		}
 	}()
+}
+
+func handleLinksNavigation(s *discordgo.Session, i *discordgo.InteractionCreate, cfg *config.Config) {
+	logger := log.With().Str("component", "linksNavigation").Str("user", i.Member.User.Username).Logger()
+
+	data := i.MessageComponentData()
+
+	// Extrai o índice atual do CustomID (ex: "links_next_0" -> 0)
+	var currentIndex int
+	if strings.HasPrefix(data.CustomID, "links_next_") {
+		fmt.Sscanf(data.CustomID, "links_next_%d", &currentIndex)
+		currentIndex++
+	} else {
+		fmt.Sscanf(data.CustomID, "links_prev_%d", &currentIndex)
+		currentIndex--
+	}
+
+	// Lê as mensagens do canal de links
+	messages, err := s.ChannelMessages(cfg.LinksChannelID, 20, "", "", "")
+	if err != nil {
+		logger.Error().Err(err).Msg("Erro ao ler o canal de links na navegação.")
+		commands.SendEphemeral(s, i, "❌ Erro ao ler o canal de links.")
+		return
+	}
+
+	sections := commands.ParseLinksFromMessages(messages)
+	orderedKeys := commands.GetOrderedSectionKeys(sections)
+
+	// Garante que o índice está dentro dos limites
+	if currentIndex < 0 {
+		currentIndex = 0
+	}
+	if currentIndex >= len(orderedKeys) {
+		currentIndex = len(orderedKeys) - 1
+	}
+
+	embed := commands.BuildLinksEmbed(sections, orderedKeys, currentIndex)
+	components := commands.BuildLinksComponents(orderedKeys, currentIndex)
+
+	// Atualiza a mensagem existente
+	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseUpdateMessage,
+		Data: &discordgo.InteractionResponseData{
+			Embeds:     []*discordgo.MessageEmbed{embed},
+			Components: components,
+		},
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("Erro ao atualizar embed de links.")
+		return
+	}
+
+	logger.Info().Int("index", currentIndex).Msg("Navegação de links executada com sucesso.")
 }

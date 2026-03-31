@@ -23,6 +23,7 @@ type Config struct {
 	RoleFiscal       string `mapstructure:"ROLE_DEPFISCAL"`
 	MuteChannelID    string `mapstructure:"FORBIDDEN_CHANNEL_ID"`
 	AutoMuteDuration int    `mapstructure:"AUTO_MUTE_DURATION"`
+	LinksChannelID   string `mapstructure:"LINKS_CHANNEL_ID"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -49,6 +50,7 @@ func LoadConfig() (*Config, error) {
 	viper.BindEnv("ROLE_DEPFISCAL")
 	viper.BindEnv("FORBIDDEN_CHANNEL_ID")
 	viper.BindEnv("AUTO_MUTE_DURATION")
+	viper.BindEnv("LINKS_CHANNEL_ID")
 
 	// Ajuda se tivermos nested keys
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
