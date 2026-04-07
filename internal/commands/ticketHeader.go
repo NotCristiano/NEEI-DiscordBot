@@ -31,7 +31,7 @@ func ticketHeaderHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	embed := &discordgo.MessageEmbed{
 		Title:       "Criar Ticket",
 		Description: "Precisas de ajuda, queres sugerir ou reportar alguma coisa? Clica no botão abaixo e entramos em contacto contigo assim que possível! \n\n **Lembra-te que uma resposta pode demorar até 48h!** \n\n ⚠️ Esta funcionalidade é apenas para suporte, por favor não abusem.",
-		Color:       0x970302,
+		Color:       0xfffff,
 		Footer: &discordgo.MessageEmbedFooter{
 			Text:    "Núcleo de Estudantes de Engenharia Informática",
 			IconURL: "https://www.cm-evora.pt/wp-content/uploads/2021/09/NEEI.jpg",
