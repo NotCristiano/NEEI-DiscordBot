@@ -23,7 +23,7 @@ func init() {
 				},
 			},
 			Handler:       echoHandler,
-			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao},
+			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao, cfg.RolePresiDeptec, cfg.RoleVicePresiDeptec},
 			Cooldown:      5 * time.Second,
 			Ephemeral:     false,
 		}

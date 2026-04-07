@@ -17,7 +17,7 @@ func init() {
 				Options:     []*discordgo.ApplicationCommandOption{},
 			},
 			Handler:       ticketHeaderHandler,
-			RequiredRoles: nil,
+			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao, cfg.RolePresiApe, cfg.RolePresiDeptec},
 			Cooldown:      5 * time.Second,
 			Ephemeral:     true,
 		}

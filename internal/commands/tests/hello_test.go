@@ -45,9 +45,15 @@ func TestHelloCommand(t *testing.T) {
 		t.Fatal("O Handler do comando é nulo.")
 	}
 
-	// Verifica as roles requeridas (neste caso hello não tem)
-	if len(commandFound.RequiredRoles) != 0 {
-		t.Fatalf("O comando Hello não deve ter roles requeridas, mas tem: %v", commandFound.RequiredRoles)
+	// Verifica as roles requeridas
+	expectedRole := []string{"roledev", "roledirecao"}
+	if len(commandFound.RequiredRoles) != len(expectedRole) {
+		t.Fatalf("Número de roles incorretos. Esperado: %d, Encontrado: %d", len(expectedRole), len(commandFound.RequiredRoles))
+	}
+	for i, role := range commandFound.RequiredRoles {
+		if role != expectedRole[i] {
+			t.Fatalf("Role incorreta. Esperado: %s, Encontrado: %s", expectedRole[i], role)
+		}
 	}
 
 	// Verifica o cooldown

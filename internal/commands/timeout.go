@@ -28,7 +28,7 @@ func init() {
 				},
 			},
 			Handler:       timeoutHandler,
-			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao},
+			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao, cfg.RolePresiDeptec, cfg.RoleApoio},
 			Cooldown:      3 * time.Second,
 			Ephemeral:     true,
 		}
