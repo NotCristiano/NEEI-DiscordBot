@@ -83,7 +83,7 @@ func initTicketMessage(s *discordgo.Session, description string, channelID strin
 	embed := &discordgo.MessageEmbed{
 		Title:       "Ticket",
 		Description: "**Descrição do ticket:**\n" + description + "\n\n" + "Se já não precisas de ajuda ou se o teu problema foi resolvido, por favor fecha o ticket clicando no botão abaixo.",
-		Color:       0x970302,
+		Color:       0xffffff,
 		Footer: &discordgo.MessageEmbedFooter{
 			Text:    "Núcleo de Estudantes de Engenharia Informática",
 			IconURL: "https://www.cm-evora.pt/wp-content/uploads/2021/09/NEEI.jpg",
@@ -102,7 +102,8 @@ func initTicketMessage(s *discordgo.Session, description string, channelID strin
 
 	// Agora juntamos embed e button para enviar
 	s.ChannelMessageSendComplex(channelID, &discordgo.MessageSend{
-		Embeds: []*discordgo.MessageEmbed{embed},
+		Content: "@here",
+		Embeds:  []*discordgo.MessageEmbed{embed},
 		Components: []discordgo.MessageComponent{
 			discordgo.ActionsRow{
 				Components: []discordgo.MessageComponent{button},
