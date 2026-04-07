@@ -10,9 +10,11 @@ import (
 
 func TestCommandKick(t *testing.T) {
 	mockConfig := &config.Config{
-		RoleDev:     "roledev",
-		RoleDirecao: "roledirecao",
-		RoleNEEI:    "roleneei",
+		RoleDev:         "roledev",
+		RoleDirecao:     "roledirecao",
+		RoleNEEI:        "roleneei",
+		RolePresiApe:    "rolepresiape",
+		RolePresiDeptec: "rolepresideptec",
 	}
 
 	// Buscamos o comando
@@ -67,7 +69,7 @@ func TestCommandKick(t *testing.T) {
 	}
 
 	// Verifica as roles requeridas
-	expectedRole := []string{"roledev", "roledirecao"}
+	expectedRole := []string{"roledev", "roledirecao", "rolepresiape", "rolepresideptec"}
 
 	// Verifica o numero de roles
 	if len(commandFound.RequiredRoles) != len(expectedRole) {

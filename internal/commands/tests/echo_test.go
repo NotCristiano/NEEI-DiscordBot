@@ -12,9 +12,11 @@ import (
 func TestEchoCommand(t *testing.T) {
 	// Criamos uma config dummy
 	mockConfig := &config.Config{
-		RoleDev:     "roledev",
-		RoleDirecao: "roledirecao",
-		RoleNEEI:    "roleneei",
+		RoleDev:             "roledev",
+		RoleDirecao:         "roledirecao",
+		RoleNEEI:            "roleneei",
+		RolePresiDeptec:     "rolepresideptec",
+		RoleVicePresiDeptec: "rolevicepresideptec",
 	}
 
 	// Buscamos o comando
@@ -74,7 +76,7 @@ func TestEchoCommand(t *testing.T) {
 	}
 
 	// Verifica as roles requeridas
-	expectedRole := []string{"roledev", "roledirecao"}
+	expectedRole := []string{"roledev", "roledirecao", "rolepresideptec", "rolevicepresideptec"}
 
 	// Verifica o numero de roles
 	if len(commandFound.RequiredRoles) != len(expectedRole) {

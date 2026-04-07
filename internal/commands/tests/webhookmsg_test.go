@@ -10,8 +10,9 @@ import (
 func TestWebhookmsgCommand(t *testing.T) {
 	// Criamos uma config dummy
 	mockConfig := &config.Config{
-		RoleDev:     "roledev",
-		RoleDirecao: "roledirecao",
+		RoleDev:         "roledev",
+		RoleDirecao:     "roledirecao",
+		RolePresiDeptec: "rolepresideptec",
 	}
 
 	// Buscamos o comando
@@ -44,8 +45,14 @@ func TestWebhookmsgCommand(t *testing.T) {
 	}
 
 	// Verifica as roles requeridas
-	if len(commandFound.RequiredRoles) != 2 {
-		t.Fatalf("Devia ter 2 roles requeridas, mas tem: %d", len(commandFound.RequiredRoles))
+	expectedRole := []string{"roledev", "roledirecao", "rolepresideptec"}
+	if len(commandFound.RequiredRoles) != len(expectedRole) {
+		t.Fatalf("Devia ter %d roles requeridas, mas tem: %d", len(expectedRole), len(commandFound.RequiredRoles))
+	}
+	for i, role := range commandFound.RequiredRoles {
+		if role != expectedRole[i] {
+			t.Fatalf("Role incorreta. Esperado: %s, Encontrado: %s", expectedRole[i], role)
+		}
 	}
 
 	// Verifica o número de opções

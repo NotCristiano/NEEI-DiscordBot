@@ -10,9 +10,11 @@ import (
 func TestTicketHeaderCommand(t *testing.T) {
 	// Criamos uma config dummy
 	mockConfig := &config.Config{
-		RoleDev:     "roledev",
-		RoleDirecao: "roledirecao",
-		RoleNEEI:    "roleneei",
+		RoleDev:         "roledev",
+		RoleDirecao:     "roledirecao",
+		RoleNEEI:        "roleneei",
+		RolePresiApe:    "rolepresiape",
+		RolePresiDeptec: "rolepresideptec",
 	}
 
 	// Buscamos o comando
@@ -55,9 +57,15 @@ func TestTicketHeaderCommand(t *testing.T) {
 		t.Fatalf("O cooldown devia ser 5 segundos, mas é: %s ", commandFound.Cooldown)
 	}
 
-	// Verifica as roles requeridas (ticketheader não tem roles requeridas)
-	if len(commandFound.RequiredRoles) != 0 {
-		t.Fatalf("O comando ticketheader não deve ter roles requeridas, mas tem: %v", commandFound.RequiredRoles)
+	// Verifica as roles requeridas
+	expectedRole := []string{"roledev", "roledirecao", "rolepresiape", "rolepresideptec"}
+	if len(commandFound.RequiredRoles) != len(expectedRole) {
+		t.Fatalf("Número de roles incorretos. Esperado: %d, Encontrado: %d", len(expectedRole), len(commandFound.RequiredRoles))
+	}
+	for i, role := range commandFound.RequiredRoles {
+		if role != expectedRole[i] {
+			t.Fatalf("Role incorreta. Esperado: %s, Encontrado: %s", expectedRole[i], role)
+		}
 	}
 
 }
