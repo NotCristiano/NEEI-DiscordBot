@@ -49,6 +49,21 @@ func createTicket(s *discordgo.Session, i *discordgo.InteractionCreate, descript
 				Type:  discordgo.PermissionOverwriteTypeRole,
 				Allow: discordgo.PermissionViewChannel | discordgo.PermissionSendMessages | discordgo.PermissionReadMessageHistory,
 			},
+			{
+				ID:    cfg.RoleDirecao,
+				Type:  discordgo.PermissionOverwriteTypeRole,
+				Allow: discordgo.PermissionViewChannel | discordgo.PermissionSendMessages | discordgo.PermissionReadMessageHistory,
+			},
+			{
+				ID:    cfg.RolePresiApe,
+				Type:  discordgo.PermissionOverwriteTypeRole,
+				Allow: discordgo.PermissionViewChannel | discordgo.PermissionSendMessages | discordgo.PermissionReadMessageHistory,
+			},
+			{
+				ID:    cfg.RoleVicePresiApe,
+				Type:  discordgo.PermissionOverwriteTypeRole,
+				Allow: discordgo.PermissionViewChannel | discordgo.PermissionSendMessages | discordgo.PermissionReadMessageHistory,
+			},
 		},
 	})
 

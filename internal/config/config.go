@@ -10,20 +10,32 @@ import (
 )
 
 type Config struct {
-	Token            string `mapstructure:"TOKEN"`
-	ServerID         string `mapstructure:"SERVER_ID"`
-	RoleDev          string `mapstructure:"ROLE_DEV"`
-	RoleDirecao      string `mapstructure:"ROLE_DIRECAO"`
-	RoleNEEI         string `mapstructure:"ROLE_NEEI"`
-	RoleTecnologico  string `mapstructure:"ROLE_DEPTEC"`
-	RoleApoio        string `mapstructure:"ROLE_DEPAPE"`
-	RoleImagem       string `mapstructure:"ROLE_DEPIMG"`
-	RoleEventos      string `mapstructure:"ROLE_DEPEV"`
-	RoleAssembleia   string `mapstructure:"ROLE_DEPASSEMBLEIA"`
-	RoleFiscal       string `mapstructure:"ROLE_DEPFISCAL"`
-	MuteChannelID    string `mapstructure:"FORBIDDEN_CHANNEL_ID"`
-	AutoMuteDuration int    `mapstructure:"AUTO_MUTE_DURATION"`
-	LinksChannelID   string `mapstructure:"LINKS_CHANNEL_ID"`
+	Token                   string `mapstructure:"TOKEN"`
+	ServerID                string `mapstructure:"SERVER_ID"`
+	RoleDev                 string `mapstructure:"ROLE_DEV"`
+	RoleDirecao             string `mapstructure:"ROLE_DIRECAO"`
+	RoleNEEI                string `mapstructure:"ROLE_NEEI"`
+	RoleTecnologico         string `mapstructure:"ROLE_DEPTEC"`
+	RoleApoio               string `mapstructure:"ROLE_DEPAPE"`
+	RoleImagem              string `mapstructure:"ROLE_DEPIMG"`
+	RoleEventos             string `mapstructure:"ROLE_DEPEV"`
+	RoleAssembleia          string `mapstructure:"ROLE_DEPASSEMBLEIA"`
+	RoleFiscal              string `mapstructure:"ROLE_DEPFISCAL"`
+	RolePresiDeptec         string `mapstructure:"ROLE_PRESI_DEPTEC"`
+	RolePresiApe            string `mapstructure:"ROLE_PRESI_APE"`
+	RolePresiImg            string `mapstructure:"ROLE_PRESI_IMG"`
+	RolePresiEv             string `mapstructure:"ROLE_PRESI_EV"`
+	RolePresiAssembleia     string `mapstructure:"ROLE_PRESI_ASSEMBLEIA"`
+	RolePresiFiscal         string `mapstructure:"ROLE_PRESI_FISCAL"`
+	RoleVicePresiDeptec     string `mapstructure:"ROLE_VICE_PRESI_DEPTEC"`
+	RoleVicePresiApe        string `mapstructure:"ROLE_VICE_PRESI_APE"`
+	RoleVicePresiImg        string `mapstructure:"ROLE_VICE_PRESI_IMG"`
+	RoleVicePresiEv         string `mapstructure:"ROLE_VICE_PRESI_EV"`
+	RoleVicePresiAssembleia string `mapstructure:"ROLE_VICE_PRESI_ASSEMBLEIA"`
+	RoleVicePresiFiscal     string `mapstructure:"ROLE_VICE_PRESI_FISCAL"`
+	MuteChannelID           string `mapstructure:"FORBIDDEN_CHANNEL_ID"`
+	AutoMuteDuration        int    `mapstructure:"AUTO_MUTE_DURATION"`
+	LinksChannelID          string `mapstructure:"LINKS_CHANNEL_ID"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -48,6 +60,18 @@ func LoadConfig() (*Config, error) {
 	viper.BindEnv("ROLE_DEPEV")
 	viper.BindEnv("ROLE_DEPASSEMBLEIA")
 	viper.BindEnv("ROLE_DEPFISCAL")
+	viper.BindEnv("ROLE_PRESI_DEPTEC")
+	viper.BindEnv("ROLE_PRESI_APE")
+	viper.BindEnv("ROLE_PRESI_IMG")
+	viper.BindEnv("ROLE_PRESI_EV")
+	viper.BindEnv("ROLE_PRESI_ASSEMBLEIA")
+	viper.BindEnv("ROLE_PRESI_FISCAL")
+	viper.BindEnv("ROLE_VICE_PRESI_DEPTEC")
+	viper.BindEnv("ROLE_VICE_PRESI_APE")
+	viper.BindEnv("ROLE_VICE_PRESI_IMG")
+	viper.BindEnv("ROLE_VICE_PRESI_EV")
+	viper.BindEnv("ROLE_VICE_PRESI_ASSEMBLEIA")
+	viper.BindEnv("ROLE_VICE_PRESI_FISCAL")
 	viper.BindEnv("FORBIDDEN_CHANNEL_ID")
 	viper.BindEnv("AUTO_MUTE_DURATION")
 	viper.BindEnv("LINKS_CHANNEL_ID")

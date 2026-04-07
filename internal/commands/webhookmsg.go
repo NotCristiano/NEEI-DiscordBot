@@ -36,7 +36,7 @@ func init() {
 				},
 			},
 			Handler:       makeWebhookmsgHandler(cfg),
-			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao},
+			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao, cfg.RolePresiDeptec},
 			Cooldown:      5 * time.Second,
 			Ephemeral:     true,
 		}

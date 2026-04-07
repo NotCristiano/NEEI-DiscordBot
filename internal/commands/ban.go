@@ -34,7 +34,7 @@ func init() {
 			},
 
 			Handler:       banHandler,
-			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao},
+			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao, cfg.RolePresiApe, cfg.RolePresiDeptec},
 			Cooldown:      5 * time.Second,
 			Ephemeral:     true,
 		}

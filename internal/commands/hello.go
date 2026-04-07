@@ -18,7 +18,7 @@ func init() {
 				Options:     []*discordgo.ApplicationCommandOption{},
 			},
 			Handler:       helloHandler,
-			RequiredRoles: nil,
+			RequiredRoles: []string{cfg.RoleDev, cfg.RoleDirecao},
 			Cooldown:      0 * time.Second,
 			Ephemeral:     false,
 		}
