@@ -2,6 +2,7 @@ package commands
 
 import (
 	"NEEI-DiscordBot/internal/config"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -81,10 +82,15 @@ func makeWebhookmsgHandler(cfg *config.Config) func(*discordgo.Session, *discord
 		}
 
 		// Formata os links da secção para o formato de embed do Discord e cria o embed com a secção e os links e envia para o canal selecionado
-		linksValue := ""
+		var builder strings.Builder
 		for _, link := range section.Links {
-			linksValue += "[" + link.Name + "](" + link.URL + ")\n"
+			builder.WriteString("[")
+			builder.WriteString(link.Name)
+			builder.WriteString("](")
+			builder.WriteString(link.URL)
+			builder.WriteString(")\n")
 		}
+		linksValue := builder.String()
 
 		embed := &discordgo.MessageEmbed{
 			Title:       section.Title,
